@@ -1,0 +1,6 @@
+name: Stopwatch
+version: 1.0
+main: me.miyeoukman.stopwatch.Stopwatch
+api-version: 1.21
+author: miyeoukman
+description: Actionbar Stopwatch Plugin
