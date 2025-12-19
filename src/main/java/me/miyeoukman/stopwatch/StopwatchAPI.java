@@ -29,7 +29,6 @@ public class StopwatchAPI {
     public static long getMinutes() {
         return (getTotalMillis() % 3600000) / 60000;
     }
-
     /**
      * 초(Seconds) 단위만 가져옵니다. (0~59)
      */

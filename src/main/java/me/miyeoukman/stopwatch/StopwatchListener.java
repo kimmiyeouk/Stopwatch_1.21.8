@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitRunnable;
 
 
@@ -33,6 +34,10 @@ public class StopwatchListener implements Listener {
 
     @EventHandler
     public void onClockClick(PlayerInteractEvent event) {
+        // [중요] 이벤트가 두 번(왼손, 오른손) 발생하는 것을 방지합니다.
+        // 오직 주 손(Main Hand)의 동작만 처리합니다.
+        if (event.getHand() != EquipmentSlot.HAND) return;
+
         Player player = event.getPlayer();
         if (event.getItem() == null || event.getItem().getType() != Material.CLOCK) return;
 
@@ -41,6 +46,9 @@ public class StopwatchListener implements Listener {
 
         // 태그를 가진 사람만 스톱워치를 조작할 수 있게 제한 (선택 사항)
         if (!player.getScoreboardTags().contains(tag)) return;
+
+        // 스톱워치 조작 시, 시계 아이템의 기본 사용 동작(예: 팔 휘두르기 외의 상호작용)을 막습니다.
+        event.setCancelled(true);
 
         // 1. 우클릭: 시작 / 중단
         if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
