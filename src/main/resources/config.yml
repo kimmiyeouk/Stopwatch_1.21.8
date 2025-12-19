@@ -1,2 +1,5 @@
 # 스톱워치를 볼 수 있는 플레이어의 태그 이름
 target-tag: "stopwatch"
+
+# 타이머 기본 색상 및 스타일 (예: &f&l = 흰색 굵게)
+timer-color: "&f&l"

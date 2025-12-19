@@ -2,6 +2,7 @@ package me.miyeoukman.stopwatch;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,6 +23,7 @@ public class StopwatchListener implements Listener {
     private long elapsedTime = 0;
     private boolean isRunning = false;
     private boolean isUiVisible = false; // UI 표시 여부도 전역으로 관리
+    private String timerColor; // 타이머 색상 변수
 
     // StopwatchListener.java 상단 변수부
     public static long currentMillis = 0; // 외부에서 접근 가능한 실시간 밀리초
@@ -29,7 +31,15 @@ public class StopwatchListener implements Listener {
 
     public StopwatchListener(Stopwatch plugin) {
         this.plugin = plugin;
+        // config에서 색상을 가져오되, & 코드를 색상 코드로 변환
+        String colorCode = plugin.getConfig().getString("timer-color", "&f&l");
+        this.timerColor = ChatColor.translateAlternateColorCodes('&', colorCode);
         startTimerTask();
+    }
+
+    // 색상 변경 메서드 (명령어에서 호출)
+    public void updateTimerColor(String newColorCode) {
+        this.timerColor = ChatColor.translateAlternateColorCodes('&', newColorCode);
     }
 
     @EventHandler
@@ -101,7 +111,7 @@ public class StopwatchListener implements Listener {
                 for (Player p : plugin.getServer().getOnlinePlayers()) {
                     // 태그를 가진 모든 플레이어에게 동일한 시간 표시
                     if (p.getScoreboardTags().contains(tag)) {
-                        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent("§f§l" + formattedTime));
+                        p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(timerColor + formattedTime));
                     }
                 }
             }

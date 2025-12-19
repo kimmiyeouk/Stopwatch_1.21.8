@@ -4,3 +4,14 @@ main: me.miyeoukman.stopwatch.Stopwatch
 api-version: 1.21
 author: miyeoukman
 description: Actionbar Stopwatch Plugin
+
+permissions:
+  stopwatch.color:
+    description: 타이머 색상을 변경할 수 있는 권한
+    default: op
+
+commands:
+  swcolor:
+    description: 스톱워치 타이머의 색상을 변경합니다.
+    usage: /swcolor <색상코드>
+    permission: stopwatch.color
