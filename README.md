@@ -35,6 +35,9 @@
 자신의 플러그인의 `plugin.yml` 파일에 다음 내용을 추가하세요.
 
 ```yaml
+name: ...
+version: ...
+main: ...
 depend: [Stopwatch]
 ```
 
