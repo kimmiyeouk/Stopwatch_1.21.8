@@ -11,6 +11,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitRunnable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 
@@ -29,19 +31,39 @@ public class StopwatchListener implements Listener {
     // StopwatchListener.java 상단 변수부
     public static volatile long currentMillis = 0; // volatile 추가로 스레드 안전성 확보
     public static volatile boolean isRunningGlobal = false;
+    
+    // 헥스 컬러 패턴 (#RRGGBB)
+    private final Pattern hexPattern = Pattern.compile("#[a-fA-F0-9]{6}");
 
     public StopwatchListener(Stopwatch plugin) {
         this.plugin = plugin;
         // 설정값 캐싱
         this.targetTag = plugin.getConfig().getString("target-tag", "stopwatch");
         String colorCode = plugin.getConfig().getString("timer-color", "&f&l");
-        this.timerColor = ChatColor.translateAlternateColorCodes('&', colorCode);
+        // 헥스 컬러 지원 적용
+        this.timerColor = translateHexColorCodes(colorCode);
         startTimerTask();
     }
 
     // 색상 변경 메서드 (명령어에서 호출)
     public void updateTimerColor(String newColorCode) {
-        this.timerColor = ChatColor.translateAlternateColorCodes('&', newColorCode);
+        // 헥스 컬러 지원 적용
+        this.timerColor = translateHexColorCodes(newColorCode);
+    }
+    
+    // 헥스 코드 변환 유틸리티 메서드
+    private String translateHexColorCodes(String message) {
+        Matcher matcher = hexPattern.matcher(message);
+        StringBuffer buffer = new StringBuffer();
+
+        while (matcher.find()) {
+            String color = message.substring(matcher.start(), matcher.end());
+            matcher.appendReplacement(buffer, net.md_5.bungee.api.ChatColor.of(color) + "");
+        }
+        matcher.appendTail(buffer);
+        
+        // 기존 & 코드 변환도 함께 지원
+        return ChatColor.translateAlternateColorCodes('&', buffer.toString());
     }
 
     @EventHandler

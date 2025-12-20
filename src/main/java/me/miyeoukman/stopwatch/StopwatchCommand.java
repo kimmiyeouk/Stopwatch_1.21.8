@@ -4,13 +4,28 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StopwatchCommand implements CommandExecutor {
 
     private final Stopwatch plugin;
+    private final Pattern hexPattern = Pattern.compile("#[a-fA-F0-9]{6}");
 
     public StopwatchCommand(Stopwatch plugin) {
         this.plugin = plugin;
+    }
+
+    private String translateHexColorCodes(String message) {
+        Matcher matcher = hexPattern.matcher(message);
+        StringBuffer buffer = new StringBuffer();
+
+        while (matcher.find()) {
+            String color = message.substring(matcher.start(), matcher.end());
+            matcher.appendReplacement(buffer, net.md_5.bungee.api.ChatColor.of(color) + "");
+        }
+        matcher.appendTail(buffer);
+        return ChatColor.translateAlternateColorCodes('&', buffer.toString());
     }
 
     @Override
@@ -24,7 +39,7 @@ public class StopwatchCommand implements CommandExecutor {
         // 인자 확인 (예: /swcolor &a&l)
         if (args.length == 0) {
             sender.sendMessage("§e[Stopwatch] 사용법: /swcolor <색상코드>");
-            sender.sendMessage("§7예시: /swcolor &a&l (초록색 굵게)");
+            sender.sendMessage("§7예시: /swcolor &a&l (초록색 굵게) 또는 #FF5500");
             return true;
         }
 
@@ -39,7 +54,7 @@ public class StopwatchCommand implements CommandExecutor {
             plugin.getListener().updateTimerColor(inputColor);
         }
 
-        sender.sendMessage("§a[Stopwatch] 타이머 색상이 변경되었습니다: " + ChatColor.translateAlternateColorCodes('&', inputColor) + "00:00:00");
+        sender.sendMessage("§a[Stopwatch] 타이머 색상이 변경되었습니다: " + translateHexColorCodes(inputColor) + "00:00:00");
         return true;
     }
 }
